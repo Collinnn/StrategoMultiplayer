@@ -1,0 +1,17 @@
+
+strategomultiplayer/.classpath
+strategomultiplayer/.project
+strategomultiplayer/.settings/org.eclipse.core.resources.prefs
+strategomultiplayer/.settings/org.eclipse.jdt.core.prefs
+strategomultiplayer/bin/.project
+strategomultiplayer/bin/.settings/org.eclipse.core.resources.prefs
+strategomultiplayer/bin/pom.xml
+strategomultiplayer/bin/src/main/java/dk/dtu/App.class
+strategomultiplayer/bin/src/main/java/dk/dtu/TestJSpaceFX.class
+strategomultiplayer/target/classes/dk/dtu/App.class
+strategomultiplayer/target/classes/dk/dtu/App.class
+strategomultiplayer/target/classes/dk/dtu/TestJSpaceFX.class
+strategomultiplayer/target/maven-status/maven-compiler-plugin/compile/default-cli/createdFiles.lst
+strategomultiplayer/target/maven-status/maven-compiler-plugin/compile/default-cli/inputFiles.lst
+strategomultiplayer/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
+strategomultiplayer/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
