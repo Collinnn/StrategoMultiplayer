@@ -19,12 +19,14 @@ public class Board {
     public static int height = 10;
     public static Tile[][] tiles = new Tile[height][width];
     private static StackPane stack = new StackPane();
+
     public Board(){
         grid.setPadding(new Insets(2));
         grid.setAlignment(Pos.CENTER);
         initTiles();
         // init Players();
     }
+  
     public static void initTiles(){
         for(int row = 0; row<height; row++){
             for(int col = 0; col < width; col++){
@@ -32,6 +34,7 @@ public class Board {
             }
         }
     }
+    
     public static void initGamePieces(){
         ArrayList<Tile> AllTiles = new ArrayList<>();
         for(Tile[] tileRow : tiles){

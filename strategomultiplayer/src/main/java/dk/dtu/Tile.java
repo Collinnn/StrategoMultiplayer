@@ -14,7 +14,7 @@ public class Tile extends Rectangle implements EventHandler<MouseEvent> {
         this.row = row;
         this.col = col;
         Board.tiles[row][col] = this;
-
+        
         setWidth(SIZE);
         setHeight(SIZE);
         setFill(Color.ALICEBLUE);
