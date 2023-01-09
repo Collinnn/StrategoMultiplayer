@@ -44,7 +44,7 @@
                     <execution>
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>dk.dtu.TestJSpaceFX</mainClass>
+                            <mainClass>dk.dtu.App</mainClass>
                         </configuration>
                     </execution>
                 </executions>
