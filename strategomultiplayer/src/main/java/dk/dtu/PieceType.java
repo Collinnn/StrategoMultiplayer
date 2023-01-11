@@ -11,6 +11,7 @@ public enum PieceType { //ENUM IS STATIC VARIABLES
     CAPTAIN(4,6),
     MAJOR(3,7),
     COLONEL(2,8),
+    GENERAL(1,9),
     MARSHAL(1,10);
 
 

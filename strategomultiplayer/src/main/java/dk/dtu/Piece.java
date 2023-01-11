@@ -35,6 +35,7 @@ public class Piece {
                 case CAPTAIN: this.jpegKey += "CAPTAIN";       break;
                 case MAJOR: this.jpegKey += "MAJOR";           break;
                 case COLONEL: this.jpegKey += "COLONEL";       break;
+                case GENERAL: this.jpegKey += "GENERAL";       break;
                 case MARSHAL: this.jpegKey += "MARSHAL";       break;
                 default:                                       break;
             }
@@ -58,6 +59,7 @@ public class Piece {
                 case CAPTAIN: this.jpegKey += "CAPTAIN";       break;
                 case MAJOR: this.jpegKey += "MAJOR";           break;
                 case COLONEL: this.jpegKey += "COLONEL";       break;
+                case GENERAL: this.jpegKey += "GENERAL";       break;
                 case MARSHAL: this.jpegKey += "MARSHAL";       break;
                 default:                                       break;
             }
