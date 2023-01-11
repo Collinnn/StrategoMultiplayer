@@ -17,10 +17,11 @@ import javafx.scene.shape.Rectangle;
 public class Tile extends Rectangle implements EventHandler<MouseEvent> {
     public static final int SIZE = 50;
     private int row, col;
+
     private StackPane stack;
     private Piece piece = null;
     private Bloom bloom = new Bloom();
-    private final InnerShadow innerShadow = new InnerShadow(3,Color.DARKBLUE);
+    private final InnerShadow innerShadow = new InnerShadow(3,Color.BISQUE);
     private Effect highlight;
     public Tile(int col, int row){
         this.row = row;
@@ -34,8 +35,8 @@ public class Tile extends Rectangle implements EventHandler<MouseEvent> {
         stack.getChildren().add(this);
         Board.grid.add(stack, col, row);
 
-        innerShadow.setRadius(25);
-        innerShadow.setChoke(10);//TODO: Calibrate Settings
+        innerShadow.setRadius(3.5);
+        innerShadow.setChoke(2);//TODO: Calibrate Settings
         bloom.setInput(innerShadow);
         highlight = bloom;
         setOnMouseClicked(this);
@@ -80,7 +81,12 @@ public class Tile extends Rectangle implements EventHandler<MouseEvent> {
         }
 		
 	}
-
+    public int getRow() {
+        return row;
+    }
+    public int getCol() {
+        return col;
+    }
 
 
 
