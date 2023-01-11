@@ -27,8 +27,29 @@ public enum PieceType { //ENUM IS STATIC VARIABLES
         return count;
     }
     //Probaly change this to work as a battle outcome with a PieceType from both accepted, might only need one since the other is this PIECE
-    public int getValue(){ 
-        return value;
+    public Battle attacks(PieceType Defender){
+        if(Defender == FLAG){
+            return Battle.VICTORY;
+        }
+        else if (Defender == BOMB){
+            if(this == MINER){
+                return Battle.VICTORY;
+            }
+            return Battle.LOST;
+        }
+        else if (Defender == MARSHAL && this == SPY){
+            return Battle.VICTORY;
+        }
+        else if(Defender == SPY && this == MARSHAL){
+            return Battle.LOST;
+        }
+        else if (Defender.value == this.value){
+            return Battle.MUTUALDEFEAT;
+        }
+        else if(this.value > Defender.value){
+            return Battle.VICTORY;
+        }
+        return Battle.LOST;
     }
 
 
