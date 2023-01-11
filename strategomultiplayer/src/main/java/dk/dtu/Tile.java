@@ -4,6 +4,9 @@ import org.jspace.SequentialSpace;
 import org.jspace.Space;
 
 import javafx.event.EventHandler;
+import javafx.scene.effect.Bloom;
+import javafx.scene.effect.Effect;
+import javafx.scene.effect.InnerShadow;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
@@ -16,10 +19,13 @@ public class Tile extends Rectangle implements EventHandler<MouseEvent> {
     private int row, col;
     private StackPane stack;
     private Piece piece = null;
-    public Tile(int row, int col){
+    private Bloom bloom = new Bloom();
+    private final InnerShadow innerShadow = new InnerShadow(3,Color.DARKBLUE);
+    private Effect highlight;
+    public Tile(int col, int row){
         this.row = row;
         this.col = col;
-        Board.tiles[row][col] = this;
+        Board.tiles[col][row] = this;
         setWidth(SIZE);
         setHeight(SIZE);
         setFill(Color.TRANSPARENT);
@@ -28,28 +34,53 @@ public class Tile extends Rectangle implements EventHandler<MouseEvent> {
         stack.getChildren().add(this);
         Board.grid.add(stack, col, row);
 
+        innerShadow.setRadius(25);
+        innerShadow.setChoke(10);//TODO: Calibrate Settings
+        bloom.setInput(innerShadow);
+        highlight = bloom;
+        setOnMouseClicked(this);
+		setOnMouseEntered(this);
+		setOnMouseExited(this);
     }
     @Override
     public void handle(MouseEvent event) {
-        // TODO Auto-generated method stub
+        TileController.onClick(this,event);
         
     }
 
     public void addPiece(Piece piece){
         String jpegKey = piece.getJpegKey();
-        setFill(new ImagePattern(new Image(jpegKey +".png")));
+        //setFill(new ImagePattern(new Image(jpegKey +".png")));
         this.piece = piece;
-        setFill(Color.RED);
-        stack = new StackPane(); // Idea to put picture on top of stackpane. Not known if works.
-        stack.getChildren().add(this);
-        Board.grid.add(stack, col, row);
+        setFill(piece.getPieceColor());
+        //stack = new StackPane(); // Idea to put picture on top of stackpane. Not known if works.
+        //stack.getChildren().add(this);
+        //Board.grid.add(stack, col, row);
         
+    }
+    
+    public boolean hasPiece() {
+    	return this.piece != null? true : false;
+    }
+    
+    public Piece getPiece() {
+    	return this.piece;
     }
 
     public void removePiece(){
         this.piece = null;
         setFill(Color.TRANSPARENT);
     }
+	public void setHighlight(Color color) {
+		if(color == null){
+            setEffect(null);
+        } else {
+            innerShadow.setColor(color);
+            setEffect(highlight);
+        }
+		
+	}
+
 
 
 

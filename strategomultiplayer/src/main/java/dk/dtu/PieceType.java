@@ -12,7 +12,8 @@ public enum PieceType { //ENUM IS STATIC VARIABLES
     MAJOR(3,7),
     COLONEL(2,8),
     GENERAL(1,9),
-    MARSHAL(1,10);
+    MARSHAL(1,10),
+    UNKOWN(40,-1);
 
 
     private int count;

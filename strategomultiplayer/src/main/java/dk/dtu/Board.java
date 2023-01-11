@@ -4,10 +4,9 @@ package dk.dtu;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
+import org.jspace.FormalField;
 import org.jspace.SequentialSpace;
 import org.jspace.Space;
 
@@ -20,12 +19,11 @@ import javafx.scene.paint.Color;
 
 public class Board {
     public static GridPane grid = new GridPane();
-    private static String setup = "FL";
     public static int width = 10;
     public static int height = 10;
     public static Tile[][] tiles = new Tile[height][width];
     private static StackPane stack = new StackPane();
-    private static Space position = new SequentialSpace();
+    public static Space position = new SequentialSpace();
 
     public Board(){
         grid.setPadding(new Insets(2));
@@ -37,76 +35,93 @@ public class Board {
     public static void initTiles(){
         for(int row = 0; row<height; row++){
             for(int col = 0; col < width; col++){
-                tiles[col][row] = new Tile(row,col);
+                tiles[col][row] = new Tile(col,row);
             }
-        }
-        try {
-            position.put(1,5,"FLAG");
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
         initGamePieces();
     }
     
     public static void initGamePieces(){
-    	String defaultString = "S112344556";
+    	String defaultString = "S112344556S112344556S112344556S112344556";
+        int stringLength = 40;
+        boolean bottomPlayer = true;
     	BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
     	System.out.println("Input initial setup of pieces as 40 character string");
     	String string = null;
     	try {
 			string = input.readLine();
-			if(string.length()>10) {
+			if(string.length()>stringLength) {
 				System.out.println("String is too long");
 				string = null;
-			} else if(string.length() <10){
+			} else if(string.length() <stringLength){
 				System.out.println("String is shorter than maximum using partial piece placements");
 				string = null;
 			} else {
-				if(string.matches("^[SBF0-9]+$")) {
+				if(string.matches("^[SBF02-9]+$")) {
 					System.out.println("String works");
 				} else {
 					System.out.println("String uses characters other than B F S 0 1 2 3 4 5 6 7 8 9");
+					string = null;
 				}
 			}
 			
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
     	if(string == null) {
+    		System.out.println("Using default setup");
     		string = defaultString;
     	}
     	
-    	for(int row = 0; row < 4; row++) {
+    	int playerRow = 0;
+    	int enemyRow = 6;
+    	Color playerColor = Color.BLUE;
+    	Color enemyColor = Color.RED;
+    	if(bottomPlayer) {
+    		playerRow = 6;
+    		enemyRow = 0;
+    	}
+    	
+    	
+    	
+    	for(int r = playerRow; r < playerRow+4; r++) {
     		for(int col = 0; col<10; col++) {
-    			
+    			try {
+					position.put(col,r,new Piece(pieceSwitch(string.charAt(((r - playerRow)*10)+col)),playerColor,false));
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+    		}
+    	}
+    	
+    	for(int r = enemyRow; r < enemyRow+4; r++) {
+    		for(int col = 0; col<10; col++) {
+    			try {
+					position.put(col,r,new Piece(PieceType.UNKOWN,enemyColor,true));
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
     		}
     	}
     	
     	
-    	
-        ArrayList<Tile> AllTiles = new ArrayList<>();
-        for(Tile[] tileRow : tiles){
-            AllTiles.addAll(Arrays.asList(tileRow));
-        }
-        int groupsize = AllTiles.size(); //Size of tiles
-        int pieces = 40;
-        Piece piece = new Piece(PieceType.FLAG, Color.RED, false);
         try {
             //Object[] position1 = position.getp();
             //if(position1 == null){
             //    return;
             //}else{
-            List<Object[]> pieceList = position.queryAll();
+        	System.out.println("Hi");
+            List<Object[]> pieceList = position.queryAll(new FormalField(Integer.class),new FormalField(Integer.class),new FormalField(Piece.class));
+            System.out.println(pieceList.size()); 
             for (Object[] objects : pieceList) {
-                tiles[(int)objects[0]][(int)objects[1]].addPiece(piece);
+                tiles[(int)objects[0]][(int)objects[1]].addPiece((Piece)objects[2]);
+                System.out.println("(" +(int)objects[0] + "," + (int)objects[1]+ ") " + (Piece)objects[2]);
             }
+            System.out.println("Goodbye");
             //}
             
 
         } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         

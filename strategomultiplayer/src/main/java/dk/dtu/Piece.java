@@ -74,9 +74,16 @@ public class Piece {
     public Color getPieceColor(){
         return pieceColor;
     }
+    
+    public boolean isOwner() {
+    	return !this.isOpponent;
+    }
 
     public String getJpegKey(){
         return jpegKey;
+    }
+    public String toString(){
+        return this.jpegKey;
     }
 }
 

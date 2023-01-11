@@ -1,16 +1,11 @@
 package dk.dtu;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOError;
 import java.io.IOException;
 
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 /**
@@ -43,7 +38,9 @@ public class App extends Application
         root.setOnCloseRequest(e->closeProgram());
 		root.setResizable(false);
 		root.show();
-
+		Thread game1 = new Thread(new GameManager(),"game1");
+		game1.start();
+		
 
     }
 
