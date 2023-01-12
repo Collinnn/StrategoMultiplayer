@@ -2,6 +2,7 @@ package dk.dtu;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.net.ProtocolException;
 
 import org.jspace.ActualField;
 import org.jspace.FormalField;
@@ -16,6 +17,7 @@ public class GameManager implements Runnable {
 			try {
 				String location = null;
 				Piece piece = null;
+				Piece defender = null;
 				boolean piecePassed = false;
 				boolean movePassed = false;
 				int pieceX = 0;
@@ -24,22 +26,24 @@ public class GameManager implements Runnable {
 				while(!piecePassed) {
 					while(true){
 						System.out.println("Click the piece you want to move");
-						while(!Board.clicked) {
-							Thread.sleep(1000);
-							System.out.println(Board.clicked);
-						}
+						while(!Board.clicked){
+							Thread.sleep(1);
+						} 
 						Board.clicked = false; 
 						if(checkString(Board.currentSelectedTile)){
 							pieceX = (int) Board.currentSelectedTile.charAt(0) -'0'; //Forces it to be an string
 							pieceY = (int) Board.currentSelectedTile.charAt(2) -'0';
 							piece = queryPiece(pieceX, pieceY);
+							System.out.println(piece.getPieceType().getValue());
 							Board.currentSelectedTile = "-1,-1";
-							if(piece != null){
+							if(piece == null || !piece.isOwner() ){
+								System.out.println("Selected piece is not yours");
+							} else{
 								piecePassed = true;
 								System.out.println(pieceX + "," + pieceY + "," + piece.getJpegKey());
 								System.out.println("Piece is selected");
 								break;
-							} else System.out.println("Selected piece is not yours");
+							} 
 						} 
 					}
 				}
@@ -49,9 +53,7 @@ public class GameManager implements Runnable {
 					while(true){
 						System.out.println("Click tile to move to (If you click the same tile it unselects)");
 						while(!Board.clicked){
-							Thread.sleep(1000);
-							System.out.println(Board.clicked);
-							System.out.println("waiting for second move");
+							Thread.sleep(1);
 						} 
 						Board.clicked = false; 
 						if(checkString(Board.currentSelectedTile)){
@@ -67,8 +69,8 @@ public class GameManager implements Runnable {
 						break; //Assume deselect
 					}
 
-					if(piece.getPieceType() == PieceType.BOMB){
-
+					if(piece.getPieceType() == PieceType.BOMB || piece.getPieceType() == PieceType.FLAG){
+						//Nothing must happen, since these can't be used. 
 					}
 					else if(piece.getPieceType() == PieceType.SCOUT){
 						switch((isStraight(pieceX, pieceY, z, w))){
@@ -77,7 +79,10 @@ public class GameManager implements Runnable {
 								movePassed = true;
 								break;
 							case BATTLE:
-								//TODO: Battle
+								System.out.println("Too battle");
+								System.out.println(z + "," + w);
+								battle(piece,pieceX,pieceY,z,w);
+								movePassed = true;
 								break;
 							default:
 								System.out.println("Mime");
@@ -93,7 +98,8 @@ public class GameManager implements Runnable {
 								movePassed = true;
 								break;
 							case BATTLE:
-								//TODO: Battle
+								battle(piece,pieceX,pieceY,z,w);
+								movePassed=true;
 								break;
 							default:
 								System.out.println("Meme");
@@ -112,6 +118,27 @@ public class GameManager implements Runnable {
 		}
 		
 	}
+	public void battle(Piece attacker, int x, int y, int z, int w) throws InterruptedException{
+		Piece defender = queryPiece(z,w);
+		System.out.println(defender.getPieceType().getValue());
+		System.out.println(attacker.getPieceType().attacks(defender.getPieceType()));
+		switch(attacker.getPieceType().attacks(defender.getPieceType())){
+			case VICTORY:
+				Board.position.get(new ActualField(z), new ActualField(w), new FormalField(Piece.class));
+				movePiece(x, y, z, w, attacker);
+				break;
+			case MUTUALDEFEAT:
+				Board.position.get(new ActualField(x), new ActualField(y), new FormalField(Piece.class));
+				Board.position.get(new ActualField(z), new ActualField(w), new FormalField(Piece.class));
+				Board.tiles[x][y].removePiece();
+				Board.tiles[z][w].removePiece();
+				break;
+			case DEFEAT:
+				Board.position.get(new ActualField(x), new ActualField(y), new FormalField(Piece.class));
+				Board.tiles[x][y].removePiece();
+				break;
+		}
+	}
 	
 	
 	public boolean checkString(String string) {
@@ -124,22 +151,17 @@ public class GameManager implements Runnable {
 	
 	public Piece queryPiece(int x,int y) throws InterruptedException {
 		//System.out.println(x);
-		
+		System.out.println(x + "," + y);
 		Object[] objects = Board.position.queryp(new ActualField(x),new ActualField(y),new FormalField(Piece.class));
 		
 		//System.out.println(piece[0] + "," + piece[1]);
 		Piece piece = objects == null? null: (Piece)objects[2];
-		if(piece == null || !piece.isOwner())return null;
 		return piece;
 	}
 	
 	public void movePiece(int x,int y, int z, int w, Piece piece) throws InterruptedException {
 		Board.position.get(new ActualField(x),new ActualField(y),new FormalField(Piece.class));
 		Board.position.put(z,w,piece);
-		//System.out.println(z + "," + w);
-		//Object[] temp = Board.position.queryp(new ActualField(z),new ActualField(w),new FormalField(Piece.class));
-		//if(temp == null) System.out.println("This sucks");
-		//else System.out.println(temp[0] + "," + temp[1]);
 		Board.tiles[x][y].removePiece();
 		Board.tiles[z][w].addPiece(piece);
 	}
