@@ -32,7 +32,7 @@ public class App extends Application
         
         
         //root.getIcons().add(new Image("stratego.png")); //Adds logo for the program.
-        Scene scene = new Scene(StageSetup.getStage());
+        Scene scene = new Scene(GameSetup.getStage());
         root.setScene(scene);
         root.centerOnScreen();
         root.setOnCloseRequest(e->closeProgram());

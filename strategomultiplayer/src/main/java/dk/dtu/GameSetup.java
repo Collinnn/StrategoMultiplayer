@@ -13,7 +13,7 @@ import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.BorderPane;
 
-public class StageSetup {
+public class GameSetup {
     public static BorderPane getStage() throws FileNotFoundException{
         BorderPane map = new BorderPane();
         map.setCenter(Board.grid);
