@@ -9,6 +9,7 @@ import javafx.scene.effect.Effect;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
@@ -36,7 +37,7 @@ public class Tile extends Rectangle implements EventHandler<MouseEvent> {
         Board.grid.add(stack, col, row);
 
         innerShadow.setRadius(3.5);
-        innerShadow.setChoke(2);//TODO: Calibrate Settings
+        innerShadow.setChoke(2); 
         bloom.setInput(innerShadow);
         highlight = bloom;
         setOnMouseClicked(this);
@@ -46,6 +47,8 @@ public class Tile extends Rectangle implements EventHandler<MouseEvent> {
     @Override
     public void handle(MouseEvent event) {
         TileController.onClick(this,event);
+              
+       
         
     }
 

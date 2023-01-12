@@ -6,8 +6,8 @@ import javafx.scene.paint.Color;
 
 public class TileController {
 
-    public int x;
-    public int y;
+    public static int x;
+    public static int y;
 
 	public static void onClick(Tile tile, MouseEvent event) {
 		if(event.getEventType() == MouseEvent.MOUSE_ENTERED){
@@ -18,8 +18,10 @@ public class TileController {
         }
         //Left Click
         if(event.getButton() == MouseButton.PRIMARY){
-            this.x = tile.getCol();
-            this.y = tile.getRow();
+            if(Board.receiveClick){
+                Board.currentSelectedTile = tile.getCol() + "," + tile.getRow();
+                Board.clicked = true;
+            }
         }
         		
 	}

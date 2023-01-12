@@ -24,6 +24,9 @@ public class Board {
     public static Tile[][] tiles = new Tile[height][width];
     private static StackPane stack = new StackPane();
     public static Space position = new SequentialSpace();
+    public static String currentSelectedTile = "-1,-1";
+    public static boolean receiveClick;
+    public static boolean clicked = false;
 
     public Board(){
         grid.setPadding(new Insets(2));
@@ -106,10 +109,6 @@ public class Board {
     	
     	
         try {
-            //Object[] position1 = position.getp();
-            //if(position1 == null){
-            //    return;
-            //}else{
         	System.out.println("Hi");
             List<Object[]> pieceList = position.queryAll(new FormalField(Integer.class),new FormalField(Integer.class),new FormalField(Piece.class));
             System.out.println(pieceList.size()); 
@@ -118,7 +117,7 @@ public class Board {
                 System.out.println("(" +(int)objects[0] + "," + (int)objects[1]+ ") " + (Piece)objects[2]);
             }
             System.out.println("Goodbye");
-            //}
+
             
 
         } catch (InterruptedException e) {
