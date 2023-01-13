@@ -17,6 +17,7 @@ import javafx.scene.shape.Rectangle;
 
 public class Tile extends Rectangle implements EventHandler<MouseEvent> {
     public static final int SIZE = 50;
+    public boolean isSelected = false;
     private int row, col;
 
     private StackPane stack;
@@ -90,7 +91,15 @@ public class Tile extends Rectangle implements EventHandler<MouseEvent> {
     public int getCol() {
         return col;
     }
-
+	public void selectTile() {
+    	this.isSelected = true;
+    	this.setHighlight(Color.ORANGE);
+    }
+    
+    public void deSelectTile() {
+    	this.isSelected = false;
+    	this.setHighlight(Color.BISQUE);
+    }
 
 
 }
