@@ -5,6 +5,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.Scanner;
 
 import org.jspace.FormalField;
 import org.jspace.SequentialSpace;
@@ -45,7 +46,7 @@ public class Board {
     }
     
     public static void initGamePieces(){
-    	String defaultString = "S112344556S112344556S112344556S112344556";
+    	String defaultString = "2237BB44BB98S3686674B1053376555FB22222234";
         int stringLength = 40;
         boolean bottomPlayer = true;
     	BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
@@ -126,7 +127,7 @@ public class Board {
         
         
     }
-    
+
     
     public static PieceType pieceSwitch(char c) {
     	switch(c) {
@@ -143,8 +144,6 @@ public class Board {
     		case '9': return PieceType.GENERAL;
     		case '0': return PieceType.MARSHAL;
     	}
-    	
-    	
     	return PieceType.FLAG;
     }
 
