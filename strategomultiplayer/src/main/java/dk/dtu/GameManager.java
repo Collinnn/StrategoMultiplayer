@@ -13,6 +13,7 @@ import org.jspace.SequentialSpace;
 import org.jspace.SpaceRepository;
 
 import javafx.scene.Scene;
+import javafx.application.Platform;
 
 public class GameManager implements Runnable {
 	
@@ -30,10 +31,16 @@ public class GameManager implements Runnable {
 		//while(!gameConnected) {
 			try {
 				startHostClient();
+				joinHostClient();
 				hasTurn = handshake();
 				Board board = new Board(hasTurn);
 				Scene game = new Scene(GameSetup.getStage());
-				App.changeScene(game);
+				Platform.runLater(new Runnable() {
+					@Override 
+					public void run() {
+					App.changeScene(game);
+					}
+				});
 				gameConnected = true;
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
@@ -59,14 +66,14 @@ public class GameManager implements Runnable {
 	}
 	public void startHostClient() throws UnknownHostException {
 		repo.add("move", move);
-		myIp = InetAddress.getLocalHost().getAddress().toString();
+		myIp = InetAddress.getLocalHost().getHostAddress();
 		System.out.println(myIp);
 		repo.addGate("tcp://" + myIp + ":9001/?keep");
 		
 		
 	}
 	//Not in use for now
-	public void joinHostclient(){
+	public void joinHostClient(){
 		boolean connected = false;
 		while(!connected) {
 			try {
@@ -74,6 +81,7 @@ public class GameManager implements Runnable {
 				s = input.readLine();
 				System.out.println("Establishing connection");
 				opponentMove = new RemoteSpace("tcp://" + s + ":9001/move?keep");
+				connected = true;
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
