@@ -22,10 +22,12 @@ public class GameManager implements Runnable {
 	private static String s = "";
 	private static RemoteSpace opponentMove;
 	private static Boolean hasTurn = false;
+	private static String myIp = "";
 	@Override
 	public void run() {
 		boolean gameConnected = false;
-		while(!gameConnected) {
+		
+		//while(!gameConnected) {
 			try {
 				startHostClient();
 				hasTurn = handshake();
@@ -38,7 +40,7 @@ public class GameManager implements Runnable {
 				System.out.println("Something went wrong in connection try again");
 				e1.printStackTrace();
 			}
-		}
+		//}
 		SetupManager.boardSetup();
 		while(true) {
 			try {
@@ -56,11 +58,16 @@ public class GameManager implements Runnable {
 		}
 	}
 	public void startHostClient() throws UnknownHostException {
-		boolean connected = false;
 		repo.add("move", move);
-		String myIp = InetAddress.getLocalHost().getAddress().toString();
-		repo.addGate("tcp://" + myIp + ":9001/?keep");
+		myIp = InetAddress.getLocalHost().getAddress().toString();
 		System.out.println(myIp);
+		repo.addGate("tcp://" + myIp + ":9001/?keep");
+		
+		
+	}
+	//Not in use for now
+	public void joinHostclient(){
+		boolean connected = false;
 		while(!connected) {
 			try {
 				System.out.println("Provide ip of opponent");
@@ -73,11 +80,6 @@ public class GameManager implements Runnable {
 					System.out.println("No connection found try again");
 				}
 		}
-		
-	}
-	//Not in use for now
-	public void joinHostclient(){
-		
 	}
 	
 	public Boolean handshake() throws IOException, InterruptedException{
