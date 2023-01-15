@@ -19,6 +19,8 @@ public class LobbySetup {
 	
 	public static Pane getStage() throws FileNotFoundException {
 		HBox lobbyMenu = new HBox();
+		new Thread(new GameManager(),"Game").start();
+		/*
 		try {
 			RemoteSpace rooms = new RemoteSpace("tcp://" + Connection.lobbyIp + ":9001/rooms?keep");
 			RemoteSpace roomsLock = new RemoteSpace("tcp://" + Connection.lobbyIp + "9001/roomsLock?keep");
@@ -60,7 +62,7 @@ public class LobbySetup {
 			lobbyMenu.getChildren().addAll(buttons);
 		} catch(IOException e) {
 			e.printStackTrace();
-		}
+		}*/
 		return lobbyMenu;
 	}
 
