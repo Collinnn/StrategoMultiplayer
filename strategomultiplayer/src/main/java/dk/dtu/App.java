@@ -17,7 +17,6 @@ import javafx.stage.Stage;
  */
 public class App extends Application
 {
-    private static Board board = new Board();
     private static Stage root = new Stage();
     public static void main( String[] args )throws IOException
     {
@@ -42,14 +41,12 @@ public class App extends Application
         
         
         //root.getIcons().add(new Image("stratego.png")); //Adds logo for the program.
-        Scene scene = new Scene(GameSetup.getStage());
+        Scene scene = new Scene(LobbySetup.getStage());
         root.setScene(scene);
         root.centerOnScreen();
         root.setOnCloseRequest(e->closeProgram());
 		root.setResizable(false);
 		root.show();
-		Thread game1 = new Thread(new TurnManager(),"game1");
-		game1.start();
 		
 
     }

@@ -28,8 +28,10 @@ public class Board {
     public static String currentSelectedTile = "-1,-1";
     public static boolean receiveClick;
     public static boolean clicked = false;
+    public static boolean bottomPlayer = true;
 
-    public Board(){
+    public Board(Boolean bool){
+    	bottomPlayer = bool;
         grid.setPadding(new Insets(2));
         grid.setAlignment(Pos.CENTER);
         initTiles();
@@ -48,7 +50,6 @@ public class Board {
     public static void initGamePieces(){
     	String defaultString = "2237BB44BB98S3686674B1053376555FB22222234";
         int stringLength = 40;
-        boolean bottomPlayer = true;
     	BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
     	System.out.println("Input initial setup of pieces as 40 character string");
     	String string = null;
@@ -79,11 +80,13 @@ public class Board {
     	
     	int playerRow = 0;
     	int enemyRow = 6;
-    	Color playerColor = Color.BLUE;
-    	Color enemyColor = Color.RED;
+    	Color playerColor = Color.RED;
+    	Color enemyColor = Color.BLUE;
     	if(bottomPlayer) {
     		playerRow = 6;
     		enemyRow = 0;
+    		playerColor = Color.BLUE;
+        	enemyColor = Color.RED;
     	}
     	
     	

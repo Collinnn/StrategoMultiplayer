@@ -7,18 +7,9 @@ import java.net.ProtocolException;
 import org.jspace.ActualField;
 import org.jspace.FormalField;
 
-public class TurnManager implements Runnable {
+public class TurnManager {
 	
-	public static boolean clash = false;
-	
-	@Override
-	public void run() {
-		PieceMoves pieceMove;
-		BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-		pieceMove = move();
-	}
-	
-	public PieceMoves move(){
+	public static PieceMoves move(){
 		while(true){
 			try {
 				String location = null;
@@ -30,7 +21,6 @@ public class TurnManager implements Runnable {
 				int pieceY = 0;
 				Board.receiveClick = true;
 				while(!piecePassed) {
-					while(true){
 						System.out.println("Click the piece you want to move");
 						while(!Board.clicked){
 							Thread.sleep(1); // Stops locking the thread leading to unexpected behavior.
@@ -51,9 +41,7 @@ public class TurnManager implements Runnable {
 							piecePassed = true;
 							System.out.println(pieceX + "," + pieceY + "," + piece.getJpegKey());
 							System.out.println("Piece is selected");
-							break;
 						} 
-					}
 				}
 				while(!movePassed) {
 					//Z and W are the coordinates where the piece will move to 
@@ -115,8 +103,7 @@ public class TurnManager implements Runnable {
 		} 		
 	}
 	
-	public void battle(Piece attacker, int x, int y, int z, int w) throws InterruptedException{
-		Piece defender = queryPiece(z,w);
+	public static void battle(Piece attacker,Piece defender, int x, int y, int z, int w) throws InterruptedException{
 		System.out.println(defender.getPieceType().getValue());
 		System.out.println(attacker.getPieceType().attacks(defender.getPieceType()));
 		switch(attacker.getPieceType().attacks(defender.getPieceType())){
@@ -145,7 +132,7 @@ public class TurnManager implements Runnable {
         return true;
 	}
 	
-	public Piece queryPiece(int x,int y) throws InterruptedException {
+	public static Piece queryPiece(int x,int y) throws InterruptedException {
 		//System.out.println(x);
 		System.out.println(x + "," + y);
 		Object[] objects = Board.position.queryp(new ActualField(x),new ActualField(y),new FormalField(Piece.class));
@@ -155,14 +142,14 @@ public class TurnManager implements Runnable {
 		return piece;
 	}
 	
-	public void movePiece(int x,int y, int z, int w, Piece piece) throws InterruptedException {
+	public static void movePiece(int x,int y, int z, int w, Piece piece) throws InterruptedException {
 		Board.position.get(new ActualField(x),new ActualField(y),new FormalField(Piece.class));
 		Board.position.put(z,w,piece);
-		Board.tiles[x][y].removePiece();
+		
 		Board.tiles[z][w].addPiece(piece);
 	}
 	
-	public Move isNeighbor(int x,int y,int z,int w) throws InterruptedException {
+	public static Move isNeighbor(int x,int y,int z,int w) throws InterruptedException {
 		if(!(x==z && (y +1 == w || y-1 == w) || y== w && (x+1 == z || x-1 == z))){
 			return Move.ILLEGAL;
 		}
@@ -178,7 +165,7 @@ public class TurnManager implements Runnable {
 	}
 	
 	//Special rules for scout
-	public Move isStraight(int x, int y, int z, int w) throws InterruptedException{
+	public static Move isStraight(int x, int y, int z, int w) throws InterruptedException{
 		if((x!=z && y==w)){
 			int start = x < z ? x+1 : z+1; 
 			int end   = x < z ? z-1 : x-1; 
@@ -219,7 +206,7 @@ public class TurnManager implements Runnable {
 		}
 	}
 
-	public Move isClash(int z, int w) throws InterruptedException{
+	public static Move isClash(int z, int w) throws InterruptedException{
 		Object[] check = Board.position.queryp(new ActualField(z),new ActualField(w),new FormalField(Piece.class));
 		if(check != null){
 			Piece piece = (Piece)check[2];

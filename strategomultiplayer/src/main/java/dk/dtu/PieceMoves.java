@@ -1,5 +1,7 @@
 package dk.dtu;
 
+import javafx.scene.paint.Color;
+
 public class PieceMoves {
     private int x;
     private int y;
@@ -13,6 +15,14 @@ public class PieceMoves {
         this.z = z;
         this.w = w; 
         this.piece = piece;
+        this.outcomeMove = outcomeMove;
+    }
+    PieceMoves(int x, int y, int z, int w,Move outcomeMove){
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.w = w; 
+        this.piece = new Piece(PieceType.UNKOWN, Board.bottomPlayer ? Color.BLUE: Color.RED, true) ;
         this.outcomeMove = outcomeMove;
     }
 
