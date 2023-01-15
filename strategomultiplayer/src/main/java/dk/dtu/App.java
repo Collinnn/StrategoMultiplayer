@@ -20,12 +20,12 @@ public class App extends Application
     private static Stage root = new Stage();
     public static void main( String[] args )throws IOException
     {
-    	System.out.println("Please provide the ip address of lobby");
+    	//System.out.println("Please provide the ip address of lobby");
     	//Should be reader here
-        Scanner myIp = new Scanner(System.in);
-        System.out.println("Enter IP");
+        //Scanner myIp = new Scanner(System.in);
+        //System.out.println("Enter IP");
         
-    	Connection.setLobbyIp(myIp.nextLine());
+    	//Connection.setLobbyIp(myIp.nextLine());
         launch(args);
         
     }
