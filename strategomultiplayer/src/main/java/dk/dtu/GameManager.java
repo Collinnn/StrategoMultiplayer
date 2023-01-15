@@ -33,6 +33,7 @@ public class GameManager implements Runnable {
 				startHostClient();
 				joinHostClient();
 				hasTurn = handshake();
+				System.out.println("hasTurn:" + hasTurn);
 				Board board = new Board(hasTurn);
 				Scene game = new Scene(GameSetup.getStage());
 				Platform.runLater(new Runnable() {
@@ -48,13 +49,15 @@ public class GameManager implements Runnable {
 				e1.printStackTrace();
 			}
 		//}
-		SetupManager.boardSetup();
+		//SetupManager.boardSetup();
 		while(true) {
 			try {
 			if(hasTurn) {
+				System.out.println("I will send a move");
 				sendMove();
 				sendTurnToken();
 			} else {
+				System.out.println("I will wait for opponent move");
 				handleEnemyMove();
 				waitForTurnToken();
 			}
@@ -95,10 +98,10 @@ public class GameManager implements Runnable {
 		s = input.readLine();
 		if(s == "me"){
 			opponentMove.get(new ActualField("start"));
-			return true;
+			return false;
 		} else{
 			move.put("start");
-			return false;
+			return true;
 		}
 	}
 
