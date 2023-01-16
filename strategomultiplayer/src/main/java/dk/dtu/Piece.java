@@ -13,6 +13,7 @@ public class Piece {
         this.pieceType = pieceType;
         this.pieceColor = pieceColor;
         this.isOpponent = isOpponent;
+        this.jpegKey = null;
         setPieceImage(); 
     }
     
@@ -20,10 +21,6 @@ public class Piece {
     private void setPieceImage(){
         if(this.pieceColor == Color.RED){
             this.jpegKey = "RED_";
-            if (this.isOpponent){
-                this.jpegKey += "BACK";
-                return;
-            }
             switch(pieceType){
                 case FLAG: this.jpegKey += "FLAG"  ;           break;
                 case BOMB: this.jpegKey += "BOMB"  ;           break;
@@ -37,6 +34,7 @@ public class Piece {
                 case COLONEL: this.jpegKey += "COLONEL";       break;
                 case GENERAL: this.jpegKey += "GENERAL";       break;
                 case MARSHAL: this.jpegKey += "MARSHAL";       break;
+                case UNKNOWN: this.jpegKey += "BACK";		   break;
                 default:                                       break;
             }
 
@@ -44,10 +42,6 @@ public class Piece {
 
         else{
             this.jpegKey = "BLUE_";
-            if (this.isOpponent){
-                this.jpegKey += "BACK";
-                return;
-            }
             switch(pieceType){
                 case FLAG: this.jpegKey += "FLAG"  ;           break;
                 case BOMB: this.jpegKey += "BOMB"  ;           break;
@@ -61,6 +55,7 @@ public class Piece {
                 case COLONEL: this.jpegKey += "COLONEL";       break;
                 case GENERAL: this.jpegKey += "GENERAL";       break;
                 case MARSHAL: this.jpegKey += "MARSHAL";       break;
+                case UNKNOWN: this.jpegKey += "BACK";		   break;
                 default:                                       break;
             }
 
@@ -87,22 +82,24 @@ public class Piece {
     }
     public void setPieceType(PieceType type) {
     	this.pieceType = type;
+    	System.out.println(type);
     	this.jpegKey = this.jpegKey.split("[_]")[0] + "_";
     	switch(type){
-        case FLAG: this.jpegKey += "FLAG"  ;           break;
-        case BOMB: this.jpegKey += "BOMB"  ;           break;
-        case SPY : this.jpegKey += "SPY"   ;           break;
-        case SCOUT: this.jpegKey += "SCOUT";           break;
-        case MINER: this.jpegKey += "MINER";           break;
-        case SERGEANT: this.jpegKey += "SERGEANT";     break;
-        case LIEUTENANT: this.jpegKey += "LIEUTENANT"; break;
-        case CAPTAIN: this.jpegKey += "CAPTAIN";       break;
-        case MAJOR: this.jpegKey += "MAJOR";           break;
-        case COLONEL: this.jpegKey += "COLONEL";       break;
-        case GENERAL: this.jpegKey += "GENERAL";       break;
-        case MARSHAL: this.jpegKey += "MARSHAL";       break;
-        default:                                       break;
-    }
+	        case FLAG: this.jpegKey += "FLAG"  ;           break;
+	        case BOMB: this.jpegKey += "BOMB"  ;           break;
+	        case SPY : this.jpegKey += "SPY"   ;           break;
+	        case SCOUT: this.jpegKey += "SCOUT";           break;
+	        case MINER: this.jpegKey += "MINER";           break;
+	        case SERGEANT: this.jpegKey += "SERGEANT";     break;
+	        case LIEUTENANT: this.jpegKey += "LIEUTENANT"; break;
+	        case CAPTAIN: this.jpegKey += "CAPTAIN";       break;
+	        case MAJOR: this.jpegKey += "MAJOR";           break;
+	        case COLONEL: this.jpegKey += "COLONEL";       break;
+	        case GENERAL: this.jpegKey += "GENERAL";       break;
+	        case MARSHAL: this.jpegKey += "MARSHAL";       break;
+	        default:                                       break;
+    	}
+    	System.out.println(jpegKey);
     }
 }
 

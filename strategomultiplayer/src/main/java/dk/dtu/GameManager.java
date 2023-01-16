@@ -12,8 +12,8 @@ import org.jspace.RemoteSpace;
 import org.jspace.SequentialSpace;
 import org.jspace.SpaceRepository;
 
-import javafx.scene.Scene;
 import javafx.application.Platform;
+import javafx.scene.Scene;
 
 public class GameManager implements Runnable {
 	
@@ -121,10 +121,11 @@ public class GameManager implements Runnable {
 			Piece piece = Board.tiles[x][y].getPiece();
 			move.put(piece.getPieceType());
 			PieceType opponentType = (PieceType) opponentMove.get(new FormalField(PieceType.class))[0];
+			System.out.println("The Opponent Type is " + opponentType);
 			TurnManager.revealPiece(pieceMove.getZ(),pieceMove.getW(),opponentType);
 			Piece opponentPiece = Board.tiles[z][w].getPiece();
 			System.out.println("Resolving battle");
-			Thread.sleep(400);
+			Thread.sleep(1000);
 			TurnManager.battle(piece, opponentPiece, pieceMove.getX(), pieceMove.getY(), pieceMove.getZ(), pieceMove.getW());
 		}else {
 			System.out.println("Sending move");
@@ -142,6 +143,7 @@ public class GameManager implements Runnable {
 	public void handleEnemyMove() throws InterruptedException{
 		PieceMoves pieceMove = (PieceMoves)opponentMove.get(new FormalField(PieceMoves.class))[0];
 		System.out.println("I have received Move");
+		Thread.sleep(1000);
 		if(pieceMove.getOutcomeMove() == Move.BATTLE) {
 			System.out.println("Move is battle");
 			Piece piece = Board.tiles[pieceMove.getZ()][pieceMove.getW()].getPiece();
@@ -154,11 +156,13 @@ public class GameManager implements Runnable {
 			TurnManager.revealPiece(pieceMove.getX(),pieceMove.getY(),opponentType);
 			Piece opponentPiece = Board.tiles[pieceMove.getX()][pieceMove.getY()].getPiece();
 			System.out.println("Resolving battle");
-			Thread.sleep(400);
+			Thread.sleep(1000);
 			TurnManager.battle(opponentPiece, piece, pieceMove.getX(), pieceMove.getY(), pieceMove.getZ(), pieceMove.getW());
 		} else {
 			System.out.println("Move is Legal just moving piece");
-			TurnManager.movePiece(pieceMove.getX(),pieceMove.getY(),pieceMove.getZ(),pieceMove.getW());			
+			TurnManager.movePiece(pieceMove.getX(),pieceMove.getY(),pieceMove.getZ(),pieceMove.getW());
+			System.out.println("Piece moved");
+			Thread.sleep(1000);
 		}
 	}
 	

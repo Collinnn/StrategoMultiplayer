@@ -23,14 +23,12 @@ public class Board {
     public static int width = 10;
     public static int height = 10;
     public static Tile[][] tiles = new Tile[height][width];
-    private static StackPane stack = new StackPane();
     public static Space position = new SequentialSpace();
     public static String currentSelectedTile = "-1,-1";
     public static boolean receiveClick;
     public static boolean clicked = false;
     public static boolean bottomPlayer = true;
-    public static Piece playerPiece = null;
-    public static Piece enemyPiece = null;
+	public static Color enemyColor = Color.BLUE;
 
     public Board(Boolean bool){
     	bottomPlayer = bool;
@@ -50,8 +48,8 @@ public class Board {
     }
     
     public static void initGamePieces(){
-    	String defaultString = "2237BB44BB98S3686674B1053376555FB22222234";
-        int stringLength = 40;
+    	String defaultString = "2237BB44BB98S3686674B053376555FB22222234";
+        int stringLength = 39;
     	BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
     	System.out.println("Input initial setup of pieces as 40 character string");
     	String string = null;
@@ -83,28 +81,40 @@ public class Board {
     	int playerRow = 0;
     	int enemyRow = 6;
     	Color playerColor = Color.RED;
-    	Color enemyColor = Color.BLUE;
+    	enemyColor = Color.BLUE;
     	if(bottomPlayer) {
     		playerRow = 6;
     		enemyRow = 0;
     		playerColor = Color.BLUE;
         	enemyColor = Color.RED;
+        	for(int r = playerRow; r < playerRow+4; r++ ) {
+        		for(int col = 0; col<10; col++) {
+        			try {
+    					position.put(col,r,new Piece(pieceSwitch(string.charAt(((r - playerRow)*10)+col)),playerColor,false));
+    				} catch (InterruptedException e) {
+    					e.printStackTrace();
+    				}
+        		}
+        	}
+    	} else {
+    		int i = 0;
+    		for(int r = playerRow+3; r >= playerRow; r-- ) {
+        		for(int col = 9; col>=0; col--) {
+        			try {
+    					position.put(col,r,new Piece(pieceSwitch(string.charAt(i)),playerColor,false));
+    					i++;
+    				} catch (InterruptedException e) {
+    					e.printStackTrace();
+    				}
+        		}
+        	}
     	}
     	
     	
     	
-    	for(int r = playerRow; r < playerRow+4; r++) {
-    		for(int col = 0; col<10; col++) {
-    			try {
-					position.put(col,r,new Piece(pieceSwitch(string.charAt(((r - playerRow)*10)+col)),playerColor,false));
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-    		}
-    	}
     	
-    	playerPiece = new Piece(PieceType.UNKOWN,playerColor,true);
-    	enemyPiece = new Piece(PieceType.UNKOWN,enemyColor,true);
+    	
+    	Piece enemyPiece = new Piece(PieceType.UNKNOWN,enemyColor,true);
     	
     	for(int r = enemyRow; r < enemyRow+4; r++) {
     		for(int col = 0; col<10; col++) {

@@ -28,13 +28,14 @@ public class TurnManager {
 						pieceX = (int) Board.currentSelectedTile.charAt(0) -'0'; //Forces it to be an string
 						pieceY = (int) Board.currentSelectedTile.charAt(2) -'0';
 						piece = queryPiece(pieceX, pieceY);
-						System.out.println(piece.getPieceType().getValue());
 						Board.currentSelectedTile = "-1,-1";
 						if(piece == null || !piece.isOwner() ){
 							System.out.println("Selected piece is not yours");
 						} else if(piece.getPieceType() == PieceType.BOMB || piece.getPieceType() == PieceType.FLAG){
+							System.out.println(piece.getPieceType().getValue());
 							System.out.println("Selected piece is a Bomb or Flag and can therefore not move");
 						}else{
+							System.out.println(piece.getPieceType().getValue());
 							Board.tiles[pieceX][pieceY].selectTile();
 							piecePassed = true;
 							System.out.println(pieceX + "," + pieceY + "," + piece.getJpegKey());
@@ -140,6 +141,8 @@ public class TurnManager {
 	
 	public static void movePiece(int x,int y, int z, int w) throws InterruptedException {
 		Piece piece = (Piece)Board.position.get(new ActualField(x),new ActualField(y),new FormalField(Piece.class))[2];
+		System.out.println(x + "," + y);
+		System.out.println(piece.getJpegKey());
 		Board.position.put(z,w,piece);
 		updatePieceMove(x,y,z,w,piece);
 		
@@ -152,14 +155,14 @@ public class TurnManager {
 	}
 	
 	public static void revealPiece(int x, int y, PieceType type) throws InterruptedException {
-		Piece tempPiece = (Piece)Board.position.get(new ActualField(x),new ActualField(y),new FormalField(Piece.class))[2];
-		tempPiece.setPieceType(type);
-		Board.position.put(x,y,tempPiece);
-		Platform.runLater(new Runnable() {
-			public void run() {
-				Board.tiles[x][y].addPiece(tempPiece);
-				}
-		});
+		Board.position.get(new ActualField(x),new ActualField(y),new FormalField(Piece.class));
+		Piece piece = new Piece(type,Board.enemyColor,true);
+		System.out.println(piece.getJpegKey());
+		Board.position.put(x,y,piece);
+		System.out.println("Revealing piece");
+		Board.tiles[x][y].addPiece(piece);
+		System.out.println(x+","+y+":" +piece.getJpegKey());
+		
 	}
 	
 	public static Move isNeighbor(int x,int y,int z,int w) throws InterruptedException {
@@ -235,20 +238,22 @@ public class TurnManager {
 	}
 	
 	public static void updatePieceMove(int x,int y, int z, int w, Piece piece) {
-		Platform.runLater(new Runnable() {
-			public void run() {
-				Board.tiles[x][y].removePiece();
-				Board.tiles[z][w].addPiece(piece);
-				}
-		});
+		Board.tiles[x][y].removePiece();
+		Board.tiles[z][w].addPiece(piece);
 	}
 	
 	public static void updatePieceRemove(int x,int y) {
-		Platform.runLater(new Runnable() {
-			public void run() {
-				Board.tiles[x][y].removePiece();
-				}
-		});
+		Board.tiles[x][y].removePiece();
+	}
+	
+	public static void printAllPieces() throws InterruptedException {
+		for(int i = 0; i<80; i++) {
+				Object[] object = Board.position.get(new FormalField(Integer.class),new FormalField(Integer.class),new FormalField(Piece.class));
+				System.out.println((int)object[0] + "," + (int)object[1]);
+				Piece piece = (Piece)object[2];
+				System.out.println(piece.getJpegKey());
+				Board.position.put((int)object[0],(int)object[1],(Piece)object[2]);
+		}
 	}
 	
 }

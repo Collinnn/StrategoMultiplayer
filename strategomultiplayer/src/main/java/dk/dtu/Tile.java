@@ -1,5 +1,8 @@
 package dk.dtu;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
 import org.jspace.SequentialSpace;
 import org.jspace.Space;
 
@@ -8,7 +11,13 @@ import javafx.scene.effect.Bloom;
 import javafx.scene.effect.Effect;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -55,9 +64,17 @@ public class Tile extends Rectangle implements EventHandler<MouseEvent> {
 
     public void addPiece(Piece piece){
         String jpegKey = piece.getJpegKey();
-        //setFill(new ImagePattern(new Image(jpegKey +".png")));
+        Image image;
+		try {
+			image = new Image(new FileInputStream(jpegKey +".png"));
+			setFill(new ImagePattern(image));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			setFill(piece.getPieceColor());
+		}
+        
         this.piece = piece;
-        setFill(piece.getPieceColor());
         //stack = new StackPane(); // Idea to put picture on top of stackpane. Not known if works.
         //stack.getChildren().add(this);
         //Board.grid.add(stack, col, row);
