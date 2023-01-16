@@ -126,12 +126,12 @@ public class GameManager implements Runnable {
 			System.out.println("Resolving battle");
 			Thread.sleep(400);
 			TurnManager.battle(piece, opponentPiece, pieceMove.getX(), pieceMove.getY(), pieceMove.getZ(), pieceMove.getW());
+		}else {
+			System.out.println("Sending move");
+			TurnManager.movePiece(pieceMove.getX(),pieceMove.getY(),pieceMove.getZ(),pieceMove.getW());
+			move.put(pieceMove);
+			System.out.println("Sent move");
 		}
-		
-		System.out.println("Sending move");
-		TurnManager.movePiece(pieceMove.getX(),pieceMove.getY(),pieceMove.getZ(),pieceMove.getW());
-		move.put(pieceMove);
-		System.out.println("Sent move");
 	}
 	
 	public void sendTurnToken() throws InterruptedException{
@@ -156,9 +156,10 @@ public class GameManager implements Runnable {
 			System.out.println("Resolving battle");
 			Thread.sleep(400);
 			TurnManager.battle(opponentPiece, piece, pieceMove.getX(), pieceMove.getY(), pieceMove.getZ(), pieceMove.getW());
+		} else {
+			System.out.println("Move is Legal just moving piece");
+			TurnManager.movePiece(pieceMove.getX(),pieceMove.getY(),pieceMove.getZ(),pieceMove.getW());			
 		}
-		System.out.println("Move is Legal just moving piece");
-		TurnManager.movePiece(pieceMove.getX(),pieceMove.getY(),pieceMove.getZ(),pieceMove.getW());
 	}
 	
 	public void waitForTurnToken() throws InterruptedException{
