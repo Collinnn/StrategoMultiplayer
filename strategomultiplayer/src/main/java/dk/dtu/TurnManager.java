@@ -67,10 +67,10 @@ public class TurnManager {
 							case LEGAL:
 								Board.tiles[pieceX][pieceY].deSelectTile();
 								System.out.println("About to send pieceMove");
-								return new PieceMoves(pieceX,pieceY,z,w,piece,Move.LEGAL);
+								return new PieceMoves(pieceX,pieceY,z,w,Move.LEGAL);
 							case BATTLE:
 								Board.tiles[pieceX][pieceY].deSelectTile();
-								return new PieceMoves(pieceX,pieceY,z,w,piece,Move.BATTLE);
+								return new PieceMoves(pieceX,pieceY,z,w,Move.BATTLE);
 							default:
 								System.out.println("Mime");
 								System.out.println(isStraight(pieceX, pieceY, z, w));
@@ -82,10 +82,10 @@ public class TurnManager {
 						switch((isNeighbor(pieceX, pieceY, z, w))){
 							case LEGAL:
 								Board.tiles[pieceX][pieceY].deSelectTile();
-								return new PieceMoves(pieceX,pieceY,z,w,piece,Move.LEGAL);
+								return new PieceMoves(pieceX,pieceY,z,w,Move.LEGAL);
 							case BATTLE:
 								Board.tiles[pieceX][pieceY].deSelectTile();
-								return new PieceMoves(pieceX,pieceY,z,w,piece,Move.BATTLE);
+								return new PieceMoves(pieceX,pieceY,z,w,Move.BATTLE);
 							default:
 								System.out.println("Meme");
 								System.out.println(isNeighbor(pieceX, pieceY, z, w));
@@ -108,7 +108,7 @@ public class TurnManager {
 		switch(attacker.getPieceType().attacks(defender.getPieceType())){
 			case VICTORY:
 				Board.position.get(new ActualField(z), new ActualField(w), new FormalField(Piece.class));
-				movePiece(x, y, z, w, attacker);
+				movePiece(x, y, z, w);
 				break;
 			case MUTUALDEFEAT:
 				removePiece(x,y);
@@ -138,8 +138,8 @@ public class TurnManager {
 		return piece;
 	}
 	
-	public static void movePiece(int x,int y, int z, int w, Piece piece) throws InterruptedException {
-		Board.position.get(new ActualField(x),new ActualField(y),new FormalField(Piece.class));
+	public static void movePiece(int x,int y, int z, int w) throws InterruptedException {
+		Piece piece = (Piece)Board.position.get(new ActualField(x),new ActualField(y),new FormalField(Piece.class))[2];
 		Board.position.put(z,w,piece);
 		updatePieceMove(x,y,z,w,piece);
 		

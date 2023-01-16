@@ -29,6 +29,8 @@ public class Board {
     public static boolean receiveClick;
     public static boolean clicked = false;
     public static boolean bottomPlayer = true;
+    public static Piece playerPiece = null;
+    public static Piece enemyPiece = null;
 
     public Board(Boolean bool){
     	bottomPlayer = bool;
@@ -101,10 +103,13 @@ public class Board {
     		}
     	}
     	
+    	playerPiece = new Piece(PieceType.UNKOWN,playerColor,true);
+    	enemyPiece = new Piece(PieceType.UNKOWN,enemyColor,true);
+    	
     	for(int r = enemyRow; r < enemyRow+4; r++) {
     		for(int col = 0; col<10; col++) {
     			try {
-					position.put(col,r,new Piece(PieceType.UNKOWN,enemyColor,true));
+					position.put(col,r,enemyPiece);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
