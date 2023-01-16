@@ -1,11 +1,9 @@
 package dk.dtu;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.ProtocolException;
-
 import org.jspace.ActualField;
 import org.jspace.FormalField;
+
+import javafx.application.Platform;
 
 public class TurnManager {
 	
@@ -68,6 +66,7 @@ public class TurnManager {
 						switch((isStraight(pieceX, pieceY, z, w))){
 							case LEGAL:
 								Board.tiles[pieceX][pieceY].deSelectTile();
+								System.out.println("About to send pieceMove");
 								return new PieceMoves(pieceX,pieceY,z,w,piece,Move.LEGAL);
 							case BATTLE:
 								Board.tiles[pieceX][pieceY].deSelectTile();
@@ -112,14 +111,11 @@ public class TurnManager {
 				movePiece(x, y, z, w, attacker);
 				break;
 			case MUTUALDEFEAT:
-				Board.position.get(new ActualField(x), new ActualField(y), new FormalField(Piece.class));
-				Board.position.get(new ActualField(z), new ActualField(w), new FormalField(Piece.class));
-				Board.tiles[x][y].removePiece();
-				Board.tiles[z][w].removePiece();
+				removePiece(x,y);
+				removePiece(z,w);
 				break;
 			case DEFEAT:
-				Board.position.get(new ActualField(x), new ActualField(y), new FormalField(Piece.class));
-				Board.tiles[x][y].removePiece();
+				removePiece(x,y);
 				break;
 		}
 	}
@@ -145,8 +141,24 @@ public class TurnManager {
 	public static void movePiece(int x,int y, int z, int w, Piece piece) throws InterruptedException {
 		Board.position.get(new ActualField(x),new ActualField(y),new FormalField(Piece.class));
 		Board.position.put(z,w,piece);
+		updatePieceMove(x,y,z,w,piece);
 		
-		Board.tiles[z][w].addPiece(piece);
+	}
+	
+	public static void removePiece(int x,int y) throws InterruptedException {
+		Board.position.get(new ActualField(x),new ActualField(y),new FormalField(Piece.class));
+		updatePieceRemove(x,y);
+		
+	}
+	
+	public static void revealPiece(int x, int y, Piece piece) throws InterruptedException {
+		Board.position.get(new ActualField(x),new ActualField(y),new FormalField(Piece.class));
+		Board.position.put(x,y,piece);
+		Platform.runLater(new Runnable() {
+			public void run() {
+				Board.tiles[x][y].addPiece(piece);
+				}
+		});
 	}
 	
 	public static Move isNeighbor(int x,int y,int z,int w) throws InterruptedException {
@@ -220,6 +232,22 @@ public class TurnManager {
 		System.out.println("No piece just move");
 		return Move.NOPIECE;
 	}
-
+	
+	public static void updatePieceMove(int x,int y, int z, int w, Piece piece) {
+		Platform.runLater(new Runnable() {
+			public void run() {
+				Board.tiles[x][y].removePiece();
+				Board.tiles[z][w].addPiece(piece);
+				}
+		});
+	}
+	
+	public static void updatePieceRemove(int x,int y) {
+		Platform.runLater(new Runnable() {
+			public void run() {
+				Board.tiles[x][y].removePiece();
+				}
+		});
+	}
 	
 }

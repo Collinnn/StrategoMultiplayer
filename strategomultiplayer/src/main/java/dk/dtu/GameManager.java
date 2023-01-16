@@ -56,10 +56,13 @@ public class GameManager implements Runnable {
 				System.out.println("I will send a move");
 				sendMove();
 				sendTurnToken();
+				System.out.println("sent token");
+				
 			} else {
 				System.out.println("I will wait for opponent move");
 				handleEnemyMove();
 				waitForTurnToken();
+				while(true) System.out.println("waiting");
 			}
 			} catch (InterruptedException e) {
 				System.out.println("Connection lost to other player");
@@ -96,27 +99,31 @@ public class GameManager implements Runnable {
 	public Boolean handshake() throws IOException, InterruptedException{
 		System.out.println("Who starts? input \"me\" or \"not me\"");
 		s = input.readLine();
-		if(s == "me"){
+		if(s.equals("me")){
 			opponentMove.get(new ActualField("start"));
-			return false;
+			return true;
 		} else{
 			move.put("start");
-			return true;
+			return false;
 		}
 	}
 
 	public void sendMove()throws InterruptedException{
 		//Do a move, make sure it  be correct.
 		PieceMoves pieceMove = TurnManager.move();
+		System.out.println("received move");
 		if(pieceMove.getOutcomeMove() == Move.BATTLE) {
 			move.put(pieceMove);
 			Piece piece = (Piece) opponentMove.get(new FormalField(Piece.class))[0];
-			Board.tiles[pieceMove.getZ()][pieceMove.getW()].addPiece(piece);
+			TurnManager.revealPiece(pieceMove.getZ(),pieceMove.getW(),piece);
 			System.out.println("Resolving battle");
 			Thread.sleep(400);
 			TurnManager.battle(pieceMove.getPiece(), piece, pieceMove.getX(), pieceMove.getY(), pieceMove.getZ(), pieceMove.getW());
 		}
+		System.out.println("Sending move");
+		TurnManager.movePiece(pieceMove.getX(),pieceMove.getY(),pieceMove.getZ(),pieceMove.getW(), pieceMove.getPiece());
 		move.put(new PieceMoves(pieceMove.getX(),pieceMove.getY(),pieceMove.getZ(),pieceMove.getW(),pieceMove.getOutcomeMove()));
+		System.out.println("Sent move");
 	}
 	
 	public void sendTurnToken() throws InterruptedException{
@@ -129,12 +136,12 @@ public class GameManager implements Runnable {
 		if(pieceMove.getOutcomeMove() == Move.BATTLE) {
 			Piece piece = Board.tiles[pieceMove.getZ()][pieceMove.getW()].getPiece();
 			move.put(piece);
-			Board.tiles[pieceMove.getX()][pieceMove.getY()].addPiece(pieceMove.getPiece());
+			TurnManager.revealPiece(pieceMove.getX(),pieceMove.getY(),pieceMove.getPiece());
 			System.out.println("Resolving battle");
 			Thread.sleep(400);
 			TurnManager.battle(pieceMove.getPiece(), piece, pieceMove.getX(), pieceMove.getY(), pieceMove.getZ(), pieceMove.getW());
 		}
-		Board.tiles[pieceMove.getZ()][pieceMove.getW()].addPiece(pieceMove.getPiece());
+		TurnManager.movePiece(pieceMove.getX(),pieceMove.getY(),pieceMove.getZ(),pieceMove.getW(), pieceMove.getPiece());
 	}
 	
 	public void waitForTurnToken() throws InterruptedException{
