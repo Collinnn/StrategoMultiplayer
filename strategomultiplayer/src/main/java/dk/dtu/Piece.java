@@ -85,6 +85,25 @@ public class Piece {
     public String toString(){
         return this.jpegKey;
     }
+    public void setPieceType(PieceType type) {
+    	this.pieceType = type;
+    	this.jpegKey = this.jpegKey.split("[_]")[0] + "_";
+    	switch(type){
+        case FLAG: this.jpegKey += "FLAG"  ;           break;
+        case BOMB: this.jpegKey += "BOMB"  ;           break;
+        case SPY : this.jpegKey += "SPY"   ;           break;
+        case SCOUT: this.jpegKey += "SCOUT";           break;
+        case MINER: this.jpegKey += "MINER";           break;
+        case SERGEANT: this.jpegKey += "SERGEANT";     break;
+        case LIEUTENANT: this.jpegKey += "LIEUTENANT"; break;
+        case CAPTAIN: this.jpegKey += "CAPTAIN";       break;
+        case MAJOR: this.jpegKey += "MAJOR";           break;
+        case COLONEL: this.jpegKey += "COLONEL";       break;
+        case GENERAL: this.jpegKey += "GENERAL";       break;
+        case MARSHAL: this.jpegKey += "MARSHAL";       break;
+        default:                                       break;
+    }
+    }
 }
 
 

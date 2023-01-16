@@ -55,16 +55,13 @@ public class GameManager implements Runnable {
 			if(hasTurn) {
 				System.out.println("I will send a move");
 				sendMove();
-				Thread.sleep(100000);
 				sendTurnToken();
 				System.out.println("sent token");
 				
 			} else {
-				Thread.sleep(100000);
 				System.out.println("I will wait for opponent move");
 				handleEnemyMove();
 				waitForTurnToken();
-				while(true) System.out.println("waiting");
 			}
 			} catch (InterruptedException e) {
 				System.out.println("Connection lost to other player");
@@ -121,13 +118,14 @@ public class GameManager implements Runnable {
 		System.out.println("received move");
 		if(pieceMove.getOutcomeMove() == Move.BATTLE) {
 			move.put(pieceMove);
-			Piece playerPiece = Board.tiles[x][y].getPiece();
-			move.put(playerPiece);
-			Piece piece = (Piece) opponentMove.get(new FormalField(Piece.class))[0];
-			TurnManager.revealPiece(pieceMove.getZ(),pieceMove.getW(),piece);
+			Piece piece = Board.tiles[x][y].getPiece();
+			move.put(piece.getPieceType());
+			PieceType opponentType = (PieceType) opponentMove.get(new FormalField(PieceType.class))[0];
+			TurnManager.revealPiece(pieceMove.getZ(),pieceMove.getW(),opponentType);
+			Piece opponentPiece = Board.tiles[z][w].getPiece();
 			System.out.println("Resolving battle");
 			Thread.sleep(400);
-			TurnManager.battle(playerPiece, piece, pieceMove.getX(), pieceMove.getY(), pieceMove.getZ(), pieceMove.getW());
+			TurnManager.battle(piece, opponentPiece, pieceMove.getX(), pieceMove.getY(), pieceMove.getZ(), pieceMove.getW());
 		}
 		
 		System.out.println("Sending move");
@@ -143,15 +141,23 @@ public class GameManager implements Runnable {
 	
 	public void handleEnemyMove() throws InterruptedException{
 		PieceMoves pieceMove = (PieceMoves)opponentMove.get(new FormalField(PieceMoves.class))[0];
+		System.out.println("I have received Move");
 		if(pieceMove.getOutcomeMove() == Move.BATTLE) {
+			System.out.println("Move is battle");
 			Piece piece = Board.tiles[pieceMove.getZ()][pieceMove.getW()].getPiece();
-			Piece opponentPiece = (Piece)move.get(new FormalField(Piece.class))[0];
-			move.put(piece);
-			TurnManager.revealPiece(pieceMove.getX(),pieceMove.getY(),opponentPiece);
+			System.out.println("Getting opponentPiece");
+			PieceType opponentType = (PieceType)opponentMove.get(new FormalField(PieceType.class))[0];
+			System.out.println("Got opponentPiece");
+			System.out.println("Sending piece");
+			move.put(piece.getPieceType());
+			System.out.println("Sent piece");
+			TurnManager.revealPiece(pieceMove.getX(),pieceMove.getY(),opponentType);
+			Piece opponentPiece = Board.tiles[pieceMove.getX()][pieceMove.getY()].getPiece();
 			System.out.println("Resolving battle");
 			Thread.sleep(400);
 			TurnManager.battle(opponentPiece, piece, pieceMove.getX(), pieceMove.getY(), pieceMove.getZ(), pieceMove.getW());
 		}
+		System.out.println("Move is Legal just moving piece");
 		TurnManager.movePiece(pieceMove.getX(),pieceMove.getY(),pieceMove.getZ(),pieceMove.getW());
 	}
 	

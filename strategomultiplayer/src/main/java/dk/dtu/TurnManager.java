@@ -151,12 +151,13 @@ public class TurnManager {
 		
 	}
 	
-	public static void revealPiece(int x, int y, Piece piece) throws InterruptedException {
-		Board.position.get(new ActualField(x),new ActualField(y),new FormalField(Piece.class));
-		Board.position.put(x,y,piece);
+	public static void revealPiece(int x, int y, PieceType type) throws InterruptedException {
+		Piece tempPiece = (Piece)Board.position.get(new ActualField(x),new ActualField(y),new FormalField(Piece.class))[2];
+		tempPiece.setPieceType(type);
+		Board.position.put(x,y,tempPiece);
 		Platform.runLater(new Runnable() {
 			public void run() {
-				Board.tiles[x][y].addPiece(piece);
+				Board.tiles[x][y].addPiece(tempPiece);
 				}
 		});
 	}
