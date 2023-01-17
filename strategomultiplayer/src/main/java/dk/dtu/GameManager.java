@@ -104,8 +104,8 @@ public class GameManager implements Runnable {
 				System.out.println("Provide ip of lobby:");
 				lobbyIp = input.readLine();
 				System.out.println("Connecting to lobby");
-				rooms = new RemoteSpace("tcp://" + lobbyIp + ":9001/rooms?keep");
-				rooms = new RemoteSpace("tcp://" + lobbyIp + ":9001/roomsLock?keep");
+				rooms = new RemoteSpace("tcp://" + lobbyIp + ":9002/rooms?keep");
+				roomsLock = new RemoteSpace("tcp://" + lobbyIp + ":9002/roomsLock?keep");
 				//Get a list of available rooms
 				List<Object[]> availableRooms = rooms.queryAll(new FormalField(Integer.class), new FormalField(String.class), new FormalField(String.class), new FormalField(Integer.class));
 				System.out.println("TEST: " + availableRooms.size());
@@ -122,9 +122,10 @@ public class GameManager implements Runnable {
 					Object[] room = rooms.get(new ActualField(roomId), new FormalField(String.class), new FormalField(String.class), new FormalField(Integer.class));
 					if((int)room[3] == 2) {
 						System.out.println("The room is full. Try another.");
+						roomsLock.put(roomId);
 					}
 					//There's no players in the room
-					else if(!room[1].equals("")) {
+					else if(room[1].equals("")) {
 						rooms.put(roomId, myIp, "", 1);
 						//Unlocks critical region
 						roomsLock.put(roomId);
@@ -161,7 +162,7 @@ public class GameManager implements Runnable {
 			opponentMove = new RemoteSpace("tcp://" + opponentIp + ":9001/move?keep");
 		}
 		else if(numberOfPlayersInRoom == 2) {
-			Object[] room = rooms.queryp(new ActualField(roomId), new FormalField(String.class), new FormalField(String.class), new ActualField(2));
+			Object[] room = rooms.query(new ActualField(roomId), new FormalField(String.class), new FormalField(String.class), new ActualField(2));
 			opponentIp = (String)room[1];
 			opponentMove = new RemoteSpace("tcp://" + opponentIp + ":9001/move?keep");
 		}

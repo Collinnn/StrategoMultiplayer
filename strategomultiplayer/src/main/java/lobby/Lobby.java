@@ -38,7 +38,7 @@ public class Lobby {
 			String ip = InetAddress.getLocalHost().getHostAddress();
 			System.out.println(ip);
 			
-			repository.addGate("tcp://" + ip + ":9001/?keep");
+			repository.addGate("tcp://" + ip + ":9002/?keep");
 			
 		} catch(InterruptedException e) {
 			e.printStackTrace();
