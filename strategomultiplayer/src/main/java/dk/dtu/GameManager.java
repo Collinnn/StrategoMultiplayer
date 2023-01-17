@@ -75,9 +75,9 @@ public class GameManager implements Runnable {
 		}
 	}
 	public void startHostClient() throws UnknownHostException {
-		repo.add("move", moveSpace);
-		repo.add("token", tokenSpace);
-		repo.add("piece", pieceSpace);
+		repo.add("moveSpace", moveSpace);
+		repo.add("tokenSpace", tokenSpace);
+		repo.add("pieceSpace", pieceSpace);
 		myIp = InetAddress.getLocalHost().getHostAddress();
 		System.out.println(myIp);
 		repo.addGate("tcp://" + myIp + ":9001/?keep");
@@ -92,9 +92,9 @@ public class GameManager implements Runnable {
 				System.out.println("Provide ip of opponent");
 				s = input.readLine();
 				System.out.println("Establishing connection");
-				opponentMoveSpace = new RemoteSpace("tcp://" + s + ":9001/move?keep");
-				opponentTokenSpace = new RemoteSpace("tcp://" + s + ":9001/token?keep");
-				opponentPieceSpace = new RemoteSpace("tcp://" + s + ":9001/pieces?keep");
+				opponentMoveSpace = new RemoteSpace("tcp://" + s + ":9001/moveSpace?keep");
+				opponentTokenSpace = new RemoteSpace("tcp://" + s + ":9001/tokenSpace?keep");
+				opponentPieceSpace = new RemoteSpace("tcp://" + s + ":9001/piecesSpace?keep");
 				connected = true;
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -176,12 +176,11 @@ public class GameManager implements Runnable {
 			System.out.println("Move is Legal just moving piece");
 			TurnManager.movePiece(x,y,z,w);
 			System.out.println("Piece moved");
-			Thread.sleep(1000);
 		}
 	}
 	
 	public void waitForTurnToken() throws InterruptedException{
-		opponentTokenSpace.get(new ActualField("turn"));
+		opponentTokenSpace.get(new ActualField("token"));
 		hasTurn = true;
 	}
 
