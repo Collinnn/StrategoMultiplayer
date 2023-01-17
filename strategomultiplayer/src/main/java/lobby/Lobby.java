@@ -3,12 +3,13 @@ package lobby;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.jspace.FormalField;
 import org.jspace.SequentialSpace;
 import org.jspace.SpaceRepository;
 
 public class Lobby {
 	
-	static final int NUMBER_OF_ROOMS = 1;
+	static final int NUMBER_OF_ROOMS = 10;
 	
 	public static void main(String[] args) {
 		
@@ -28,14 +29,16 @@ public class Lobby {
 				//Creates NUMBER_OF_ROOMS empty rooms.
 				//The tuples have the following information:
 				//(room id, ip of player 1, ip of player 2, number of players) 
-				rooms.put(i, null, null, 0);
-				roomsLock.put("LOCK" + i);
+				rooms.put(i, "", "", 0);
+				//System.out.println((int)rooms.get(new FormalField(Integer.class), new FormalField(String.class), new FormalField(String.class), new FormalField(Integer.class))[0]);
+				roomsLock.put(i);
 			}
 			
 			//Lobby host should be connected to DTU's network
-			String ip = InetAddress.getLocalHost().getHostAddress().toString();
+			String ip = InetAddress.getLocalHost().getHostAddress();
+			System.out.println(ip);
 			
-			repository.addGate("tcp://" + ip + ":9001/?keep");
+			repository.addGate("tcp://" + ip + ":9002/?keep");
 			
 		} catch(InterruptedException e) {
 			e.printStackTrace();

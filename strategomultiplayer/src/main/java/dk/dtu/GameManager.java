@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.List;
 
 import org.jspace.ActualField;
 import org.jspace.FormalField;
@@ -23,9 +24,10 @@ public class GameManager implements Runnable {
 	private static SequentialSpace pieceSpace = new SequentialSpace();
 	private static BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 	private static String s = "";
-	private static RemoteSpace opponentMoveSpace,opponentTokenSpace,opponentPieceSpace;
-	public static Boolean hasTurn = true;
+	private static RemoteSpace opponentMoveSpace,opponentTokenSpace,opponentPieceSpace,rooms,roomsLock;
+	public static Boolean hasTurn = false;
 	private static String myIp = "";
+	private static String lobbyIp = "";
 	private static String opponentIp = "";
 	public static Boolean hasWon = false;
 	public static Boolean gameFinished;
@@ -39,9 +41,9 @@ public class GameManager implements Runnable {
 		//while(!gameConnected) {
 			try {
 				startHostClient();
-				joinHostClient();
-				hasTurn = handshake();
-				System.out.println("hasTurn:" + hasTurn);
+				joinRoom();
+				//hasTurn = handshake();
+				//System.out.println("hasTurn:" + hasTurn);
 				Board board = new Board(hasTurn);
 				Scene game = new Scene(GameSetup.getStage());
 				Platform.runLater(new Runnable() {
@@ -89,23 +91,77 @@ public class GameManager implements Runnable {
 		repo.add("tokenSpace", tokenSpace);
 		repo.add("pieceSpace", pieceSpace);
 		myIp = InetAddress.getLocalHost().getHostAddress();
-		System.out.println(myIp);
+		System.out.println("my ip is: " + myIp);
 		repo.addGate("tcp://" + myIp + ":9001/?keep");
-		
-		
 	}
 	//Not in use for now
-	public void joinHostClient(){
-		boolean connected = false;
-		while(!connected) {
+//	public void joinHostClient(){
+//		boolean connected = false;
+//		while(!connected) {
+//			try {
+//				System.out.println("Provide ip of opponent");
+//				s = input.readLine();
+//				System.out.println("Establishing connection");
+//				opponentMove = new RemoteSpace("tcp://" + s + ":9001/move?keep");
+//				connected = true;
+//				} catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//					System.out.println("No connection found try again");
+//				}
+//		}
+//	}
+	
+	public void joinRoom() throws InterruptedException {
+		boolean joined = false;
+		while(!joined) {
 			try {
-				System.out.println("Provide ip of opponent");
-				s = input.readLine();
-				System.out.println("Establishing connection");
-				opponentMoveSpace = new RemoteSpace("tcp://" + s + ":9001/moveSpace?keep");
-				opponentTokenSpace = new RemoteSpace("tcp://" + s + ":9001/tokenSpace?keep");
-				opponentPieceSpace = new RemoteSpace("tcp://" + s + ":9001/pieceSpace?keep");
-				connected = true;
+				System.out.println("Provide ip of lobby:");
+				lobbyIp = input.readLine();
+				System.out.println("Connecting to lobby");
+				rooms = new RemoteSpace("tcp://" + lobbyIp + ":9002/rooms?keep");
+				roomsLock = new RemoteSpace("tcp://" + lobbyIp + ":9002/roomsLock?keep");
+				//Get a list of available rooms
+				List<Object[]> availableRooms = rooms.queryAll(new FormalField(Integer.class), new FormalField(String.class), new FormalField(String.class), new FormalField(Integer.class));
+				System.out.println("TEST: " + availableRooms.size());
+				String lobbyString = "The available rooms are:\n";
+				for(int i = 0; i < availableRooms.size(); i++) {
+					lobbyString += "Room " + (i+1) + "\t Current active players: " + (int) availableRooms.get(i)[3] + "\n";
+				}
+				System.out.println(lobbyString);
+				while(!joined) {
+					System.out.print("Enter the number of the room you wish to join");
+					int roomId = Integer.parseInt(input.readLine());
+					//Locks the critical region
+					roomsLock.get(new ActualField(roomId));
+					Object[] room = rooms.get(new ActualField(roomId), new FormalField(String.class), new FormalField(String.class), new FormalField(Integer.class));
+					if((int)room[3] == 2) {
+						System.out.println("The room is full. Try another.");
+						roomsLock.put(roomId);
+					}
+					//There's no players in the room
+					else if(room[1].equals("")) {
+						rooms.put(roomId, myIp, "", 1);
+						//Unlocks critical region
+						roomsLock.put(roomId);
+						//The player is player 1
+						hasTurn = true;
+						joined = true;
+						System.out.println("You are blue. Awaiting player...");
+						connectPlayers(roomId,1);
+					}
+					else {
+						rooms.put(roomId, (String)room[1], myIp, 2);
+						//unlocks critical region
+						roomsLock.put(roomId);
+						//The player is player 2
+						hasTurn = false;
+						joined = true;
+						System.out.println("You are red. Starting game...");
+						connectPlayers(roomId,2);
+					}
+					
+				}
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -114,17 +170,37 @@ public class GameManager implements Runnable {
 		}
 	}
 	
-	public Boolean handshake() throws IOException, InterruptedException{
-		System.out.println("Who starts? input \"me\" or \"not me\"");
-		s = input.readLine();
-		if(s.equals("me")){
-			opponentMoveSpace.get(new ActualField("start"));
-			return true;
-		} else{
-			moveSpace.put("start");
-			return false;
+	public void connectPlayers(int roomId, int numberOfPlayersInRoom) throws InterruptedException, UnknownHostException, IOException {
+		if(numberOfPlayersInRoom == 1) {
+			Object[] room = rooms.query(new ActualField(roomId), new FormalField(String.class), new FormalField(String.class), new ActualField(2));
+			opponentIp = (String)room[2];
+			opponentMoveSpace = new RemoteSpace("tcp://" + opponentIp + ":9001/moveSpace?keep");
+			opponentTokenSpace = new RemoteSpace("tcp://" + opponentIp + ":9001/tokenSpace?keep");
+			opponentPieceSpace = new RemoteSpace("tcp://" + opponentIp + ":9001/pieceSpace?keep");
+		}
+		else if(numberOfPlayersInRoom == 2) {
+			Object[] room = rooms.query(new ActualField(roomId), new FormalField(String.class), new FormalField(String.class), new ActualField(2));
+			opponentIp = (String)room[1];
+			opponentMoveSpace = new RemoteSpace("tcp://" + opponentIp + ":9001/moveSpace?keep");
+			opponentTokenSpace = new RemoteSpace("tcp://" + opponentIp + ":9001/tokenSpace?keep");
+			opponentPieceSpace = new RemoteSpace("tcp://" + opponentIp + ":9001/pieceSpace?keep");
+		}
+		else {
+			throw new IllegalArgumentException("Illegal player count");
 		}
 	}
+	
+//	public Boolean handshake() throws IOException, InterruptedException{
+//		System.out.println("Who starts? input \"me\" or \"not me\"");
+//		s = input.readLine();
+//		if(s.equals("me")){
+//			opponentMove.get(new ActualField("start"));
+//			return true;
+//		} else{
+//			move.put("start");
+//			return false;
+//		}
+//	}
 
 	public void sendMove()throws InterruptedException{
 		//Do a move, make sure it  be correct.
