@@ -76,6 +76,13 @@ public class GameManager implements Runnable {
 				e.printStackTrace();
 			}
 		}
+		repo.closeGates();
+		Platform.runLater(new Runnable() {
+			@Override 
+			public void run() {
+			Platform.exit();
+			}
+		});
 	}
 	public void startHostClient() throws UnknownHostException {
 		repo.add("moveSpace", moveSpace);
