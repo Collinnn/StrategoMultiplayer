@@ -35,7 +35,7 @@ public enum PieceType { //ENUM IS STATIC VARIABLES
     //Probaly change this to work as a battle outcome with a PieceType from both accepted, might only need one since the other is this PIECE
     public Battle attacks(PieceType Defender){
         if(Defender == FLAG){
-            return Battle.VICTORY;
+            return Battle.WIN;
         }
         else if (Defender == BOMB){
             if(this == MINER){

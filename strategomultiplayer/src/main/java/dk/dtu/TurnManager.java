@@ -118,6 +118,16 @@ public class TurnManager {
 			case DEFEAT:
 				removePiece(x,y);
 				break;
+			case WIN:
+				if(GameManager.hasTurn) {
+					System.out.println("You win the game");
+					GameManager.hasWon = true;
+					GameManager.gameFinished = true;
+				} else {
+					System.out.println("You lost the game");
+					GameManager.gameFinished = true;
+				}
+				
 		}
 	}
 

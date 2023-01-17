@@ -48,7 +48,7 @@ public class Board {
     }
     
     public static void initGamePieces(){
-    	String defaultString = "2237BB44BB98S3686674B053376555FB22222234";
+    	String defaultString = "2237BB44BF98S3686674B053376555FB22222234";
         int stringLength = 39;
     	BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
     	System.out.println("Input initial setup of pieces as 40 character string");

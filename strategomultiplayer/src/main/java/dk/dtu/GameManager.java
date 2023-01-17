@@ -24,15 +24,18 @@ public class GameManager implements Runnable {
 	private static BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 	private static String s = "";
 	private static RemoteSpace opponentMoveSpace,opponentTokenSpace,opponentPieceSpace;
-	private static Boolean hasTurn = true;
+	public static Boolean hasTurn = true;
 	private static String myIp = "";
 	private static String opponentIp = "";
+	public static Boolean hasWon = false;
+	public static Boolean gameFinished;
 	
 	
 	@Override
 	public void run() {
 		boolean gameConnected = false;
-		
+		gameFinished =false;
+		hasWon = false;
 		//while(!gameConnected) {
 			try {
 				startHostClient();
@@ -55,7 +58,7 @@ public class GameManager implements Runnable {
 			}
 		//}
 		//SetupManager.boardSetup();
-		while(true) {
+		while(!gameFinished) {
 			try {
 			if(hasTurn) {
 				System.out.println("I will send a move");
@@ -94,7 +97,7 @@ public class GameManager implements Runnable {
 				System.out.println("Establishing connection");
 				opponentMoveSpace = new RemoteSpace("tcp://" + s + ":9001/moveSpace?keep");
 				opponentTokenSpace = new RemoteSpace("tcp://" + s + ":9001/tokenSpace?keep");
-				opponentPieceSpace = new RemoteSpace("tcp://" + s + ":9001/piecesSpace?keep");
+				opponentPieceSpace = new RemoteSpace("tcp://" + s + ":9001/pieceSpace?keep");
 				connected = true;
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
