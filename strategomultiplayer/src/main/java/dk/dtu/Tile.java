@@ -3,22 +3,12 @@ package dk.dtu;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
-import org.jspace.SequentialSpace;
-import org.jspace.Space;
-
 import javafx.event.EventHandler;
-import javafx.scene.effect.Bloom;
 import javafx.scene.effect.Effect;
+import javafx.scene.effect.Glow;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundImage;
-import javafx.scene.layout.BackgroundPosition;
-import javafx.scene.layout.BackgroundRepeat;
-import javafx.scene.layout.BackgroundSize;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
@@ -31,7 +21,7 @@ public class Tile extends Rectangle implements EventHandler<MouseEvent> {
 
     private StackPane stack;
     private Piece piece = null;
-    private Bloom bloom = new Bloom();
+    private Glow glow = new Glow();
     private final InnerShadow innerShadow = new InnerShadow(3,Color.BISQUE);
     private Effect highlight;
     public Tile(int col, int row){
@@ -47,9 +37,9 @@ public class Tile extends Rectangle implements EventHandler<MouseEvent> {
         Board.grid.add(stack, col, row);
 
         innerShadow.setRadius(3.5);
-        innerShadow.setChoke(2); 
-        bloom.setInput(innerShadow);
-        highlight = bloom;
+        innerShadow.setChoke(1.0); 
+        glow.setInput(innerShadow);
+        highlight = glow;
         setOnMouseClicked(this);
 		setOnMouseEntered(this);
 		setOnMouseExited(this);
@@ -66,7 +56,7 @@ public class Tile extends Rectangle implements EventHandler<MouseEvent> {
         String jpegKey = piece.getJpegKey();
         Image image;
 		try {
-			image = new Image(new FileInputStream(jpegKey +".png"));
+			image = new Image(new FileInputStream("./assets/" +jpegKey +".png"));
 			setFill(new ImagePattern(image));
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -115,7 +105,7 @@ public class Tile extends Rectangle implements EventHandler<MouseEvent> {
     
     public void deSelectTile() {
     	this.isSelected = false;
-    	this.setHighlight(Color.BISQUE);
+    	this.setHighlight(null);
     }
 
 
