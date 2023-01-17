@@ -18,12 +18,17 @@ import javafx.scene.Scene;
 public class GameManager implements Runnable {
 	
 	private static SpaceRepository repo = new SpaceRepository();
-	private static SequentialSpace move = new SequentialSpace();
+	private static SequentialSpace moveSpace = new SequentialSpace();
+	private static SequentialSpace tokenSpace = new SequentialSpace();
+	private static SequentialSpace pieceSpace = new SequentialSpace();
 	private static BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 	private static String s = "";
-	private static RemoteSpace opponentMove;
-	private static Boolean hasTurn = false;
+	private static RemoteSpace opponentMoveSpace,opponentTokenSpace,opponentPieceSpace;
+	private static Boolean hasTurn = true;
 	private static String myIp = "";
+	private static String opponentIp = "";
+	
+	
 	@Override
 	public void run() {
 		boolean gameConnected = false;
@@ -70,7 +75,9 @@ public class GameManager implements Runnable {
 		}
 	}
 	public void startHostClient() throws UnknownHostException {
-		repo.add("move", move);
+		repo.add("move", moveSpace);
+		repo.add("token", tokenSpace);
+		repo.add("piece", pieceSpace);
 		myIp = InetAddress.getLocalHost().getHostAddress();
 		System.out.println(myIp);
 		repo.addGate("tcp://" + myIp + ":9001/?keep");
@@ -85,7 +92,9 @@ public class GameManager implements Runnable {
 				System.out.println("Provide ip of opponent");
 				s = input.readLine();
 				System.out.println("Establishing connection");
-				opponentMove = new RemoteSpace("tcp://" + s + ":9001/move?keep");
+				opponentMoveSpace = new RemoteSpace("tcp://" + s + ":9001/move?keep");
+				opponentTokenSpace = new RemoteSpace("tcp://" + s + ":9001/token?keep");
+				opponentPieceSpace = new RemoteSpace("tcp://" + s + ":9001/pieces?keep");
 				connected = true;
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -99,10 +108,10 @@ public class GameManager implements Runnable {
 		System.out.println("Who starts? input \"me\" or \"not me\"");
 		s = input.readLine();
 		if(s.equals("me")){
-			opponentMove.get(new ActualField("start"));
+			opponentMoveSpace.get(new ActualField("start"));
 			return true;
 		} else{
-			move.put("start");
+			moveSpace.put("start");
 			return false;
 		}
 	}
@@ -116,58 +125,63 @@ public class GameManager implements Runnable {
 		int w = pieceMove.getW();
 		Move playerMove = pieceMove.getOutcomeMove();
 		System.out.println("received move");
-		if(pieceMove.getOutcomeMove() == Move.BATTLE) {
-			move.put(pieceMove);
+		if(playerMove == Move.BATTLE) {
+			moveSpace.put(pieceMove);
 			Piece piece = Board.tiles[x][y].getPiece();
-			move.put(piece.getPieceType());
-			PieceType opponentType = (PieceType) opponentMove.get(new FormalField(PieceType.class))[0];
+			pieceSpace.put(piece.getPieceType());
+			PieceType opponentType = (PieceType) opponentPieceSpace.get(new FormalField(PieceType.class))[0];
 			System.out.println("The Opponent Type is " + opponentType);
-			TurnManager.revealPiece(pieceMove.getZ(),pieceMove.getW(),opponentType);
+			TurnManager.revealPiece(z,w,opponentType);
 			Piece opponentPiece = Board.tiles[z][w].getPiece();
 			System.out.println("Resolving battle");
 			Thread.sleep(1000);
-			TurnManager.battle(piece, opponentPiece, pieceMove.getX(), pieceMove.getY(), pieceMove.getZ(), pieceMove.getW());
+			TurnManager.battle(piece, opponentPiece, x, y, z, w);
 		}else {
 			System.out.println("Sending move");
-			TurnManager.movePiece(pieceMove.getX(),pieceMove.getY(),pieceMove.getZ(),pieceMove.getW());
-			move.put(pieceMove);
+			TurnManager.movePiece(x,y,z,w);
+			moveSpace.put(pieceMove);
 			System.out.println("Sent move");
 		}
 	}
 	
 	public void sendTurnToken() throws InterruptedException{
-		move.put("turn");
+		tokenSpace.put("token");
 		hasTurn = false;
 	}
 	
 	public void handleEnemyMove() throws InterruptedException{
-		PieceMoves pieceMove = (PieceMoves)opponentMove.get(new FormalField(PieceMoves.class))[0];
+		PieceMoves pieceMove = (PieceMoves)opponentMoveSpace.get(new FormalField(PieceMoves.class))[0];
 		System.out.println("I have received Move");
+		int x = pieceMove.getX();
+		int y = pieceMove.getY();
+		int z = pieceMove.getZ();
+		int w = pieceMove.getW();
+		Move opponentMove = pieceMove.getOutcomeMove();
 		Thread.sleep(1000);
-		if(pieceMove.getOutcomeMove() == Move.BATTLE) {
+		if(opponentMove == Move.BATTLE) {
 			System.out.println("Move is battle");
 			Piece piece = Board.tiles[pieceMove.getZ()][pieceMove.getW()].getPiece();
 			System.out.println("Getting opponentPiece");
-			PieceType opponentType = (PieceType)opponentMove.get(new FormalField(PieceType.class))[0];
+			PieceType opponentType = (PieceType)opponentPieceSpace.get(new FormalField(PieceType.class))[0];
 			System.out.println("Got opponentPiece");
 			System.out.println("Sending piece");
-			move.put(piece.getPieceType());
+			pieceSpace.put(piece.getPieceType());
 			System.out.println("Sent piece");
-			TurnManager.revealPiece(pieceMove.getX(),pieceMove.getY(),opponentType);
+			TurnManager.revealPiece(x,y,opponentType);
 			Piece opponentPiece = Board.tiles[pieceMove.getX()][pieceMove.getY()].getPiece();
 			System.out.println("Resolving battle");
 			Thread.sleep(1000);
-			TurnManager.battle(opponentPiece, piece, pieceMove.getX(), pieceMove.getY(), pieceMove.getZ(), pieceMove.getW());
+			TurnManager.battle(opponentPiece, piece, x, y, z, w);
 		} else {
 			System.out.println("Move is Legal just moving piece");
-			TurnManager.movePiece(pieceMove.getX(),pieceMove.getY(),pieceMove.getZ(),pieceMove.getW());
+			TurnManager.movePiece(x,y,z,w);
 			System.out.println("Piece moved");
 			Thread.sleep(1000);
 		}
 	}
 	
 	public void waitForTurnToken() throws InterruptedException{
-		opponentMove.get(new ActualField("turn"));
+		opponentTokenSpace.get(new ActualField("turn"));
 		hasTurn = true;
 	}
 
