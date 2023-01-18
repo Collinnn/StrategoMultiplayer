@@ -31,6 +31,7 @@ public class GameManager implements Runnable {
 	private static String opponentIp = "";
 	public static Boolean hasWon = false;
 	public static Boolean gameFinished;
+	private static int roomId;
 	
 	
 	@Override
@@ -124,22 +125,31 @@ public class GameManager implements Runnable {
 				//Get a list of available rooms
 				List<Object[]> availableRooms = rooms.queryAll(new FormalField(Integer.class), new FormalField(String.class), new FormalField(String.class), new FormalField(Integer.class));
 				System.out.println("TEST: " + availableRooms.size());
-				String lobbyString = "The available rooms are:\n";
+				String lobbyString = "The available rooms are:\n\n";
 				for(int i = 0; i < availableRooms.size(); i++) {
-					lobbyString += "Room " + (i+1) + "\t Current active players: " + (int) availableRooms.get(i)[3] + "\n";
+					lobbyString += "Room " + (int) availableRooms.get(i)[0] + "\t Current active players: " + (int) availableRooms.get(i)[3] + "\n";
 				}
 				System.out.println(lobbyString);
+				//The protocol is handled here
 				while(!joined) {
 					System.out.print("Enter the number of the room you wish to join");
-					int roomId = Integer.parseInt(input.readLine());
+					roomId = Integer.parseInt(input.readLine());
 					//Locks the critical region
 					roomsLock.get(new ActualField(roomId));
 					Object[] room = rooms.get(new ActualField(roomId), new FormalField(String.class), new FormalField(String.class), new FormalField(Integer.class));
 					if((int)room[3] == 2) {
 						System.out.println("The room is full. Try another.");
+						//Updates the rooms
+						rooms.put(room);
 						roomsLock.put(roomId);
+						availableRooms = rooms.queryAll(new FormalField(Integer.class), new FormalField(String.class), new FormalField(String.class), new FormalField(Integer.class));
+						lobbyString = "The available rooms are:\n\n";
+						for(int i = 0; i < availableRooms.size(); i++) {
+							lobbyString += "Room " + (int) availableRooms.get(i)[0] + "\t Current active players: " + (int) availableRooms.get(i)[3] + "\n";
+						}
+						System.out.println(lobbyString);
 					}
-					//There's no players in the room
+					//Room is empty
 					else if(room[1].equals("")) {
 						rooms.put(roomId, myIp, "", 1);
 						//Unlocks critical region
@@ -266,8 +276,8 @@ public class GameManager implements Runnable {
 	}
 	
 	public void waitForTurnToken() throws InterruptedException{
-		opponentTokenSpace.get(new ActualField("token"));
-		hasTurn = true;
+			opponentTokenSpace.get(new ActualField("token"));
+			hasTurn = true;
 	}
 
 }
