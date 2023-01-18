@@ -135,15 +135,13 @@ public class GameManager implements Runnable {
 					while(true){
 						System.out.print("Enter the number of the room you wish to join");
 						String lobbycheck = input.readLine();
-						if(lobbycheck.matches("([1-9]|(10)){1}+$")){
+						if(lobbycheck.matches("([1-9]){1}+$")|| lobbycheck.matches("10")){//Number between 1-10
 							roomId = Integer.valueOf(lobbycheck);
 							break;
 						}else{
 							System.out.println("Invalid id, try a number between 1-10");
 						}
-					}
-
-					
+					}	
 					//Locks the critical region
 					roomsLock.get(new ActualField(roomId));
 					Object[] room = rooms.get(new ActualField(roomId), new FormalField(String.class), new FormalField(String.class), new FormalField(Integer.class));
