@@ -9,3 +9,6 @@ From here each player is prompted for a string which represents the start locati
 
 ## Potential issues
 If maven and Jspace is not installed the program will not be able to run. \\
+
+## Other
+The lobby part is all in the terminal while the feedback from the game also comes from the console, the main game is done in javafx
