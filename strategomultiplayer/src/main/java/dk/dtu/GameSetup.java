@@ -17,7 +17,7 @@ public class GameSetup {
     public static BorderPane getStage() throws FileNotFoundException{
         BorderPane map = new BorderPane();
         map.setCenter(Board.grid);
-        Image image = new Image(new FileInputStream("the_cat_of_wisdom.png"));
+        Image image = new Image(new FileInputStream("./assets/Background.png"));
         ImageView imageView = new ImageView(image);
 
         BackgroundSize size = new BackgroundSize(
